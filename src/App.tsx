@@ -5,16 +5,9 @@ import type { CSSProperties } from 'react';
 import { IconSprite, Icon } from './components/Icons';
 import { RecentRepos } from './components/RecentRepos';
 import { MobileNav } from './components/MobileNav';
-import {
-  GITHUB_USER,
-  HIDDEN_REPOS,
-  education,
-  experience,
-  projects,
-  skills,
-  type Entry,
-  type Project,
-} from './content';
+import { LangSwitcher } from './components/LangSwitcher';
+import { useT } from './i18n/LanguageContext';
+import { GITHUB_USER, HIDDEN_REPOS, type Entry, type Project } from './content';
 
 const LINKEDIN = 'https://www.linkedin.com/in/daniel-cort%C3%A9s-890423324/';
 const GITHUB = `https://github.com/${GITHUB_USER}`;
@@ -22,13 +15,14 @@ const EMAIL = 'danielcortescasadas6@gmail.com';
 const CURRENT_YEAR = new Date().getFullYear();
 
 function ProjectLink({ project }: { project: Project }) {
+  const t = useT();
   switch (project.link.kind) {
     case 'web':
-      return <a href={project.link.href}>Ver web</a>;
+      return <a href={project.link.href}>{t.project.web}</a>;
     case 'code':
-      return <a href={project.link.href}>Ver código</a>;
+      return <a href={project.link.href}>{t.project.code}</a>;
     case 'private':
-      return <span>Código privado</span>;
+      return <span>{t.project.private}</span>;
   }
 }
 
@@ -71,9 +65,10 @@ export default function App() {
   useNameReveal();
   const compact = useMediaQuery('(max-width: 51.99rem)');
   const skillsView = useInView<HTMLDListElement>();
+  const t = useT();
   let tagIndex = 0;
 
-  const projectGithubLinks = projects
+  const projectGithubLinks = t.projects
     .filter((project) => project.link.kind === 'code')
     .map((project) => (project.link as { href: string }).href);
   const linkedUrls = [GITHUB, ...projectGithubLinks, `${GITHUB}/danielcortes2.github.io`];
@@ -83,23 +78,26 @@ export default function App() {
       <IconSprite />
 
       <a className="skip-link" href="#contenido">
-        Saltar al contenido
+        {t.skipLink}
       </a>
 
       <header className="site-header">
-        <nav className="wrap site-nav" aria-label="Secciones">
-          <ul>
-            <li>
-              <a href="#experiencia">Experiencia</a>
-            </li>
-            <li>
-              <a href="#proyectos">Proyectos</a>
-            </li>
-            <li>
-              <a href="#contacto">Contacto</a>
-            </li>
-          </ul>
-        </nav>
+        <div className="wrap header-inner">
+          <nav className="site-nav" aria-label={t.navAria}>
+            <ul>
+              <li>
+                <a href="#experiencia">{t.nav.experience}</a>
+              </li>
+              <li>
+                <a href="#proyectos">{t.nav.projects}</a>
+              </li>
+              <li>
+                <a href="#contacto">{t.nav.contact}</a>
+              </li>
+            </ul>
+          </nav>
+          <LangSwitcher />
+        </div>
       </header>
 
       <main id="contenido">
@@ -108,29 +106,25 @@ export default function App() {
             <h1 className="hero-name" id="nombre">
               <span>Daniel</span> <span>Cortés</span>
             </h1>
-            <p className="hero-role">Desarrollador de software</p>
-            <p className="hero-intro">
-              Desarrollo aplicaciones web de principio a fin: base de datos, API, interfaz y
-              despliegue. Actualmente trabajo en Inetum como desarrollador aplicando IA y estudio
-              Ingeniería Informática.
-            </p>
+            <p className="hero-role">{t.hero.role}</p>
+            <p className="hero-intro">{t.hero.intro}</p>
             <ul className="hero-actions">
               <li>
                 <a className="button button-solid" href={LINKEDIN} rel="me">
                   <Icon name="linkedin" />
-                  LinkedIn
+                  {t.hero.linkedin}
                 </a>
               </li>
               <li>
                 <a className="button" href={GITHUB} rel="me">
                   <Icon name="github" />
-                  GitHub
+                  {t.hero.github}
                 </a>
               </li>
               <li>
                 <a className="button" href={`mailto:${EMAIL}`}>
                   <Icon name="mail" />
-                  Correo
+                  {t.hero.email}
                 </a>
               </li>
             </ul>
@@ -140,10 +134,10 @@ export default function App() {
         <section className="section" id="experiencia" aria-labelledby="experiencia-titulo">
           <div className="wrap section-grid">
             <h2 className="section-title" id="experiencia-titulo">
-              Experiencia
+              {t.sections.experience}
             </h2>
             <ol className="timeline">
-              {experience.map((entry) => (
+              {t.experience.map((entry) => (
                 <TimelineEntry entry={entry} key={entry.title} />
               ))}
             </ol>
@@ -153,10 +147,10 @@ export default function App() {
         <section className="section" id="proyectos" aria-labelledby="proyectos-titulo">
           <div className="wrap section-grid">
             <h2 className="section-title" id="proyectos-titulo">
-              Proyectos
+              {t.sections.projects}
             </h2>
             <div className="projects">
-              {projects.map((project) => (
+              {t.projects.map((project) => (
                 <article className="project" key={project.title}>
                   <header className="project-head">
                     <h3 className="project-title">{project.title}</h3>
@@ -166,7 +160,7 @@ export default function App() {
                   <p>{project.summary}</p>
                   {compact ? (
                     <details className="project-details">
-                      <summary>Ver detalles</summary>
+                      <summary>{t.project.details}</summary>
                       <ProjectPoints points={project.points} />
                     </details>
                   ) : (
@@ -187,10 +181,10 @@ export default function App() {
         <section className="section" id="formacion" aria-labelledby="formacion-titulo">
           <div className="wrap section-grid">
             <h2 className="section-title" id="formacion-titulo">
-              Formación
+              {t.sections.education}
             </h2>
             <ol className="timeline">
-              {education.map((entry) => (
+              {t.education.map((entry) => (
                 <TimelineEntry entry={entry} key={entry.title} />
               ))}
             </ol>
@@ -200,10 +194,10 @@ export default function App() {
         <section className="section" id="tecnologias" aria-labelledby="tecnologias-titulo">
           <div className="wrap section-grid">
             <h2 className="section-title" id="tecnologias-titulo">
-              Tecnologías
+              {t.sections.skills}
             </h2>
             <dl className={`skills${skillsView.inView ? ' is-revealed' : ''}`} ref={skillsView.ref}>
-              {skills.map((group) => (
+              {t.skills.map((group) => (
                 <div key={group.area}>
                   <dt>{group.area}</dt>
                   <dd>
@@ -229,13 +223,10 @@ export default function App() {
         <section className="section" id="contacto" aria-labelledby="contacto-titulo">
           <div className="wrap section-grid">
             <h2 className="section-title" id="contacto-titulo">
-              Contacto
+              {t.sections.contact}
             </h2>
             <div className="contact">
-              <p className="contact-intro">
-                ¿Buscas a alguien para tu equipo o tienes un proyecto en mente? Escríbeme por correo
-                o por LinkedIn.
-              </p>
+              <p className="contact-intro">{t.contact.intro}</p>
               <a className="contact-email" href={`mailto:${EMAIL}`}>
                 {EMAIL}
               </a>
@@ -243,13 +234,13 @@ export default function App() {
                 <li>
                   <a href={LINKEDIN} rel="me">
                     <Icon name="linkedin" />
-                    LinkedIn
+                    {t.hero.linkedin}
                   </a>
                 </li>
                 <li>
                   <a href={GITHUB} rel="me">
                     <Icon name="github" />
-                    GitHub
+                    {t.hero.github}
                   </a>
                 </li>
               </ul>
@@ -262,7 +253,7 @@ export default function App() {
         <div className="wrap footer-inner">
           <p>© {CURRENT_YEAR} Daniel Cortés</p>
           <p>
-            <a href={`${GITHUB}/danielcortes2.github.io`}>Código de esta web</a>
+            <a href={`${GITHUB}/danielcortes2.github.io`}>{t.footer.code}</a>
           </p>
         </div>
       </footer>

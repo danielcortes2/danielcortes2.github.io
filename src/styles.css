@@ -166,10 +166,20 @@ code {
   z-index: 1;
 }
 
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(1rem, 3vw, 2rem);
+  padding-block: 1.5rem;
+}
+
+.site-header :focus-visible {
+  outline-color: var(--hero-ink);
+}
+
 .site-nav {
   display: flex;
-  justify-content: flex-end;
-  padding-block: 1.5rem;
 }
 
 .site-nav ul {
@@ -190,6 +200,57 @@ code {
 .site-nav a:focus-visible,
 .hero :focus-visible {
   outline-color: var(--hero-ink);
+}
+
+/* Selector de idioma: tres segmentos tipográficos sobre la portada */
+
+.lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+
+.lang-option {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  padding: 0.25rem 0.6rem;
+  border: 0;
+  background: none;
+  color: var(--hero-ink);
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  opacity: 0.6;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 160ms ease;
+}
+
+/* En pantallas táctiles cada segmento llega al tamaño mínimo cómodo (44px). */
+@media (pointer: coarse) {
+  .lang-option {
+    min-height: 2.75rem;
+    padding-inline: 0.8rem;
+  }
+}
+
+.lang-option + .lang-option {
+  border-left: 1px solid rgb(255 255 255 / 0.35);
+}
+
+.lang-option:hover {
+  opacity: 0.9;
+}
+
+.lang-option.is-active {
+  opacity: 1;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
 }
 
 .hero {
@@ -718,8 +779,14 @@ code {
 }
 
 @media (max-width: 47.99rem) {
-  .site-header {
+  .site-nav {
     display: none;
+  }
+
+  /* El selector queda arriba a la derecha, respetando el notch en horizontal. */
+  .header-inner {
+    padding-top: calc(1rem + env(safe-area-inset-top));
+    padding-right: env(safe-area-inset-right);
   }
 
   .mobile-nav {

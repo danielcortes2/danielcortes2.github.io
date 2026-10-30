@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useT } from '../i18n/LanguageContext';
+import type { Dictionary } from '../i18n/dictionary';
 
 const MAX_REPOS = 4;
 const CACHE_TTL = 60 * 60 * 1000;
@@ -79,17 +81,17 @@ async function getRepos(user: string): Promise<Repo[]> {
   }
 }
 
-function timeAgo(date: Date) {
-  const relativeTime = new Intl.RelativeTimeFormat('es', { numeric: 'auto' });
+function timeAgo(date: Date, t: Dictionary) {
+  const relativeTime = new Intl.RelativeTimeFormat(t.intlLocale, { numeric: 'auto' });
   const seconds = (date.getTime() - Date.now()) / 1000;
   for (const [unit, size] of TIME_UNITS) {
     if (Math.abs(seconds) >= size) return relativeTime.format(Math.round(seconds / size), unit);
   }
-  return 'hace un momento';
+  return t.github.moment;
 }
 
-function metaText(repo: Repo) {
-  const updated = `actualizado ${timeAgo(new Date(repo.pushedAt))}`;
+function metaText(repo: Repo, t: Dictionary) {
+  const updated = `${t.github.updated} ${timeAgo(new Date(repo.pushedAt), t)}`;
   return repo.language
     ? `${repo.language}, ${updated}`
     : updated.charAt(0).toUpperCase() + updated.slice(1);
@@ -105,6 +107,7 @@ export function RecentRepos({
   hidden?: string[];
 }) {
   const [repos, setRepos] = useState<Repo[]>([]);
+  const t = useT();
 
   useEffect(() => {
     let active = true;
@@ -133,10 +136,11 @@ export function RecentRepos({
 
   return (
     <div className="github">
-      <h3 className="github-title">Más en GitHub</h3>
+      <h3 className="github-title">{t.github.title}</h3>
       <p>
-        Todo mi código público está en{' '}
-        <a href={`https://github.com/${user}`}>github.com/{user}</a>.
+        {t.github.introBefore}
+        <a href={`https://github.com/${user}`}>github.com/{user}</a>
+        {t.github.introAfter}
       </p>
       <ul className="repo-list" hidden={repos.length === 0}>
         {repos.map((repo) => (
@@ -145,7 +149,7 @@ export function RecentRepos({
               {repo.name}
             </a>
             {repo.description && <p className="repo-desc">{repo.description}</p>}
-            <p className="repo-meta">{metaText(repo)}</p>
+            <p className="repo-meta">{metaText(repo, t)}</p>
           </li>
         ))}
       </ul>
